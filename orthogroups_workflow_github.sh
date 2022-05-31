@@ -28,6 +28,9 @@ awk '{nzeros=0; for(col=36; col<=NF; col++) {if($col == 0) {nzeros++}} {if(nzero
 ###Put all the alignments and trees into a directory, run phylopypruner on the directory as so####
 phylopypruner --overwrite --dir filtering_seqs_orthofinder_alignments/ --output pruning_output_2/ --threads 16 --include Oreobates_cruralis mzua2401_Trinity mzua2448_Trinity mzua2499_Trinity mzua2511_Trinity mzua2538_Trinity mzua2591_Trinity mzua2610_Trinity --subclades subclades.txt --trim-divergent .80 --trim-lb 5 --min-taxa 20
 
+###make da nucleotide files from your csvs####
+for file in *.csv; do f2=${file%%.csv}".nuc.fa"; seqtk subseq bigtranscripts_1.fasta $file > ../reduced_nucs_unaligned/$f2; done
+
 ####remove all phylopypruner alignments without mzua in them####
 grep -r -L -Z 'mzua' . | xargs --null rm
 sed -i 's/|/_/g' *fa
