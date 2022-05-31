@@ -32,3 +32,12 @@ phylopypruner --overwrite --dir filtering_seqs_orthofinder_alignments/ --output 
 grep -r -L -Z 'mzua' . | xargs --null rm
 sed -i 's/|/_/g' *fa
 sed -i 's/_lcl_/_lcl|/g' *fa
+
+
+#########Get protein sequences for your selected proteins from the original, unaligned protein fasta orthogroup files from Orthofinder###
+for file in *.fa; do f2=${file%%.fa}"_pruned.csv"; f3=${file%%.fa}"_pruned.pep.fa" ; seqtk subseq $file ../pruned_csvs/$f2 > $f3; done
+####align the protein sequences####
+for file in *pep.fa; do f2=${file%%pep.fa}"pep.aln"; mafft --anysymbol --auto --quiet --thread 8 $file > ../pruned_pep_alignments/$f2; done 
+
+####Now make nucleotide alignment files from your pruned nucleotide fastas, and your aligned, pruned protein fastas you just made####
+for file in *_pruned.aln; do f2=${file%%_pruned.aln}"_pruned.nuc.fa"; f3=${file%%_pruned.aln}".nuc.aln"; pal2nal.pl $file ../pruned_nucs/$f2 -output fasta > ../nuc_alignments_from_pal2nal/$f3; done
