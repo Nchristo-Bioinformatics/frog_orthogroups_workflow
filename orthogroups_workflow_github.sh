@@ -1,10 +1,17 @@
+####Go to your phylopypruner results directory####
 
+cd output_alignments
+mkdir ../phylopypruner_alignments
+cp *pruned.fa ../phylopypruner_alignments
 
 ####remove all phylopypruner alignments without mzua in them####
 cd phylopypruner_alignments
 grep -r -L -Z 'mzua' . | xargs --null rm
 sed -i 's/|/_/g' *fa
 sed -i 's/_lcl_/_lcl|/g' *fa
+###trim all these pruned alignment files, make new protein trees for Hyphy to use####
+for file in *pruned.fa; do f2=${file%%pruned.fa}"trim.aln"; trimal -in $file -out $f2 -fasta -gappyout; done
+for file in *trim.aln; do iqtree -s $file -st AA -fast -mset LG,WAG,JTT,DAYHOFF  -lbp 1000 -nt 16; done
 
 ###let's make some csv files to help get the pruned nucleotide files for pal2nal###
 mkdir ../pruned_csvs/
