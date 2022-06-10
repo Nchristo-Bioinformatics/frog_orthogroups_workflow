@@ -27,3 +27,11 @@ cut -f1 ALL_dupgroups_nodes_support.txt | sort | uniq | wc -l
 cut -f1 ALL_dupgroups_nodes_support.txt | sort | uniq | while read -r LINE; do grep $LINE cluster_domain_annotation.* >> dupgroup_kinfin_annotations.txt; done
 cut -f1 dupgroup_kinfin_annotations.txt | cut -f2 -d: | sort | uniq | wc -l
 ##228###
+
+###Gather the original orthofinder fastas####
+mkdir OGfastas
+cut -f1 dupgroup_kinfin_annotations.txt | cut -f2 -d: | sort | uniq| while read -r LINE; do cp ~/OrthoFinder/NO_CDHIT_NEW_TREE_CHECK/OrthoFinder/Results_Jun01/Orthogroup_Sequences/$LINE*".fa" OGfastas/; done
+###PRUNING PARALOGUES TO MAKE ORTHOGROUPS SMALLER###
+mkdir OG_alignments
+cut -f1 dupgroup_kinfin_annotations.txt | cut -f2 -d: | sort | uniq| while read -r LINE; do cp ~/OrthoFinder/NO_CDHIT_NEW_TREE_CHECK/OrthoFinder/Results_Jun01/MultipleSequenceAlignments/$LINE* OG_alignments/; done
+cut -f1 dupgroup_kinfin_annotations.txt | cut -f2 -d: | sort | uniq| while read -r LINE; do cp ~/OrthoFinder/NO_CDHIT_NEW_TREE_CHECK/OrthoFinder/Results_Jun01/Resolved_Gene_Trees/$LINE* OG_alignments/; done
