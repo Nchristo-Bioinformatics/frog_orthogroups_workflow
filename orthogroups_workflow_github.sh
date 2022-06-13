@@ -18,6 +18,9 @@ for file in OG*fa; do f2=${file%%fa}"csv"; grep ">" $file | sed 's/>//g' > ../pr
 ###trim all these pruned alignment files, make new protein trees for Hyphy to use####
 for file in *pruned.fa; do f2=${file%%pruned.fa}"trim.aln"; trimal -in $file -out $f2 -fasta -gappyout; done
 for file in *trim.aln; do iqtree -s $file -st AA -fast -mset LG,WAG,JTT,DAYHOFF  -lbp 1000 -nt 16; done
+###label the foregrounds for these trees, for pristimantis AND direct developers####
+for file in *treefile; do f2=${file%%treefile}"dd_tree"; hyphy ~/Cleaning_up_mylife/NO_CDHIT/hyphy-analyses/LabelTrees/label-tree.bf --tree $file  --regexp 'mzua|Oreo' --output ../$f2; done
+for file in *treefile; do f2=${file%%treefile}"pristi_tree"; hyphy ~/Cleaning_up_mylife/NO_CDHIT/hyphy-analyses/LabelTrees/label-tree.bf --tree $file  --regexp 'mzua' --output ../$f2; done
 
 ###because we need the original, unaltered coding sequences, I find it just easier to concatenate all our *cds files from Transdecoder into one file, aka. bigtranscripts_1.fa###
 cd ..
