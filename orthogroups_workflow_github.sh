@@ -57,4 +57,4 @@ for file in *_pruned.aln; do f2=${file%%_pruned.aln}"_pruned.nuc.fa"; f3=${file%
 ###trim your new pal2nal nucleotide alignments###
 for file in *aln; do f2=${file%%.aln}"trim.aln"; trimal -in $file -out ../trimmed_nuc_alignments_pal2nal/$f2 -fasta -gappyout; done
 ####now remove stop codons####
-for file in *aln; do f2=${file%%aln}"nostop.fa"; HYPHYMP ~/miniconda3/pkgs/hyphy-2.3.14-h5466e78_0/lib/hyphy/TemplateBatchFiles/CleanStopCodons.bf Universal $file No/Yes ../nostop_alignments/$f2; done
+for file in *aln; do f2=${file%%aln}"nostop.fa"; hyphy ~/miniconda3/pkgs/hyphy-2.5.39-h91ae1e9_0/share/hyphy/TemplateBatchFiles/CleanStopCodons.bf Universal $file No/Yes ../nostop_alignments/$f2; done
