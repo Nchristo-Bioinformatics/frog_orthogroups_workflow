@@ -22,7 +22,14 @@ cat ./interproscan-5.52-86.0/out/*.tsv > all_proteins.tsv
 
       # Install kinfin:
 ####you will need python 2.7, and some packages, probably easiest way to do this is as follows:###
-cat 
+conda create -y -n py27 python=2.7
+conda activate py27
+
+pip install SciPy
+pip install ete3
+pip install Matplotlib
+pip install Docopt
+
 git clone https://github.com/DRL/kinfin.git
 cd kinfin
 ./install
