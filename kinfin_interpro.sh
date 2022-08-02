@@ -21,6 +21,8 @@ for proteinName in *fasta; do ./interproscan.sh -i $proteinName -d out/ -t p --g
 cat ./interproscan-5.52-86.0/out/*.tsv > all_proteins.tsv
 
       # Install kinfin:
+####you will need python 2.7, and some packages, probably easiest way to do this is as follows:###
+cat 
 git clone https://github.com/DRL/kinfin.git
 cd kinfin
 ./install
