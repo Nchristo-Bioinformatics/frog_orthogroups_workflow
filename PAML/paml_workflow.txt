@@ -1,0 +1,11 @@
+###for each foreground labeling for PAML, make a directory where you will keep your treefiles###
+mkdir /polar_workflow/PAL2NAL/04-TREES_paml_dd   
+mkdir /polar_workflow/PAL2NAL/04-TREES_paml_elevation
+mkdir /polar_workflow/PAL2NAL/04-TREES_paml_pristi
+
+####put all the unlabeled treefiles from IQTREE that you made from your pep alignments in each directory####
+cp foreground_list.txt /polar_workflow/PAL2NAL/04-TREES_paml*
+cp 04-TREES_nolabel/*treefile 04-TREES_paml*/
+
+###make sure the foreground list is in your tree dir, then label each of your foreground species with a "#1"####
+cat foreground_list.txt | while read -r LINE; do sed -i "s/$LINE/$LINE#1/g" *treefile; done
