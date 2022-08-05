@@ -5,3 +5,4 @@ for file in *treefile; do f2=${file%%treefile}"dd_tree"; hyphy ../../hyphy-analy
 ###FOR PRISTIMANTIS####
 for file in *treefile; do f2=${file%%treefile}"pristi_tree"; hyphy ../../hyphy-analyses/LabelTrees/label-tree.bf --tree $file  --regexp 'mzua' --output $f2; done
 
+cat foreground_list.txt | while read -r LINE; do sed -i "s/$LINE/$LINE\{Foreground\}/g" *treefile; done
