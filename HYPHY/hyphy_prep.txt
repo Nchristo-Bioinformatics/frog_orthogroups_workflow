@@ -1,0 +1,7 @@
+####RELABEL THE TREES FOR BUSTEDPH AND ABSREL####
+cd 04-TREES_nolabel
+###FOR DIRECT DEVELOPERS###
+for file in *treefile; do f2=${file%%treefile}"dd_tree"; hyphy ../../hyphy-analyses/LabelTrees/label-tree.bf --tree $file  --regexp 'mzua|Oreo' --output ../04-TREES_hyphy_dd/$f2; done
+###FOR PRISTIMANTIS####
+for file in *treefile; do f2=${file%%treefile}"pristi_tree"; hyphy ../../hyphy-analyses/LabelTrees/label-tree.bf --tree $file  --regexp 'mzua' --output $f2; done
+
