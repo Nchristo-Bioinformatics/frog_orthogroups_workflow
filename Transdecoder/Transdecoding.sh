@@ -30,3 +30,15 @@ ls *transdecoder_dir | grep dir | cut -f1 -d. | while read -r LINE; do TransDeco
 
 ###Now use cd-hit for clustering and further reducing transcript/gene redundancy###
 for file in *transdecoder.pep; do cd-hit -i $file -o $file"_cdhit90.pep" -c 0.9; done &
+###rename the sequences and files for your orthofinder run####
+mkdir ../new_names/
+mkdir ../new_names/cdhit_cds
+mkdir ../new_names/cdhit_peps
+###first peps###
+for file in *.transdecoder.pep_cdhit90.pep; do f2=${file%%.transdecoder.pep_cdhit90.pep}; sed 's/::/$/' $file | sed 's/Gene.*\$//g' | sed 's/lcl|/lcl_/g' > ../new_names/cdhit_peps/$f2; done
+###then cds###
+for file in *.transdecoder.cds; do sed 's/::/$/' $file | sed 's/Gene.*\$//g' | sed 's/lcl|/lcl_/g' > ../new_names/cdhit_cds/$file; done
+###now use the peps for your Orthofinder directory###
+cd ../new_names/cdhit_peps
+cp *fasta ../../../Orthofinder/01-AA_cdhit/
+
