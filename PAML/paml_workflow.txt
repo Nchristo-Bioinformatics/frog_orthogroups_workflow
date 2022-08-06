@@ -9,3 +9,18 @@ cp 04-TREES_nolabel/*treefile 04-TREES_paml*/
 
 ###make sure the foreground list is in your tree dir, then label each of your foreground species with a "#1"####
 cat foreground_list.txt | while read -r LINE; do sed -i "s/$LINE/$LINE#1/g" *treefile; done
+
+###for each hypothesis you are going to test with codeml, make a directory###
+mkdir pristimantis
+ln -s ../04-TREES_paml_pristi/*treefile .
+ln -s ../../PAL2NAL/05-NOSTOPS/*nostop.fa .
+
+###run this script to create control files for alt and null hypotheses for each alignment, give it a default tree for now, the species tree from Orthofinder###
+perl ../../perl_scripts/run_codeml.pl --tree=SpeciesTree_rooted_node_labels.txt --null --alt --aln_suf=nostop.fa
+###replace that default tree in the ctrl files with the right gene tree for each alignment###
+for file in *.fa.treefile; do f2=${file%%.fa.treefile}".nuc.nostop.fa.alt.ctl"; f3=${file%%.fa.treefile}".nuc.nostop.fa.null.ctl"; sed -i "s/SpeciesTree_rooted_node_labels.txt/$file/g" $f2; sed -i "s/SpeciesTree_rooted_node_labels.txt/$file/g" $f3; done
+###lets also change the control files to put outfiles in the right directories, for ease of management###
+mkdir alt/
+mkdir null
+sed -i 's|outfile = |outfile = alt/|g' *alt.ctl
+sed -i 's|outfile = |outfile = null/|g' *null.ctl
