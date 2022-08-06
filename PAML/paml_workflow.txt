@@ -24,3 +24,9 @@ mkdir alt/
 mkdir null
 sed -i 's|outfile = |outfile = alt/|g' *alt.ctl
 sed -i 's|outfile = |outfile = null/|g' *null.ctl
+
+screen -S paml
+export PATH=/home/nchristo/polar_workflow/PAML/paml4.9j/bin/:$PATH   
+###now lets run codeml, dunno how long it will take###
+for file in *ctl; do codeml $file; done &
+screen -d
