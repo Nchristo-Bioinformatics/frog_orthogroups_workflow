@@ -22,11 +22,16 @@ for file in *.fa.treefile; do f2=${file%%.fa.treefile}".nuc.nostop.fa.alt.ctl"; 
 ###lets also change the control files to put outfiles in the right directories, for ease of management###
 mkdir alt/
 mkdir null
-sed -i 's|outfile = |outfile = alt/|g' *alt.ctl
-sed -i 's|outfile = |outfile = null/|g' *null.ctl
+
 
 screen -S paml
 export PATH=/home/nchristo/polar_workflow/PAML/paml4.9j/bin/:$PATH   
 ###now lets run codeml, dunno how long it will take###
 for file in *ctl; do codeml $file; done &
 screen -d
+
+###moving your stuff to tar files for doing codeml on uf server###
+tar --use-compress-program="pigz -k " -cf trees_elevation.tar.gz *treefile
+tar --use-compress-program="pigz -k " -cf alignments_elevation.tar.gz *nostop.fa
+tar --use-compress-program="pigz -k " -cf controls_elevation.tar.gz *ctl
+
