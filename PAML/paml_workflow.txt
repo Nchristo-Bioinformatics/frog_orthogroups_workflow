@@ -6,12 +6,20 @@ mkdir /polar_workflow/PAL2NAL/04-TREES_paml_pristi
 ####put all the unlabeled treefiles from IQTREE that you made from your pep alignments in each directory####
 cp foreground_list.txt /polar_workflow/PAL2NAL/04-TREES_paml*
 cp 04-TREES_nolabel/*treefile 04-TREES_paml*/
-
 ###make sure the foreground list is in your tree dir, then label each of your foreground species with a "#1"####
+cd 04-TREES_paml_pristi
 cat foreground_list.txt | while read -r LINE; do sed -i "s/$LINE/$LINE#1/g" *treefile; done
 
+cd ../04-TREES_paml_dd
+grep -r -L -Z 'Oreo' *treefile | xargs --null rm
+cd ../04-TREES_paml_elevation
+grep -r -L -Z 'Nano' *treefile | xargs --null rm
+grep -r -L -Z 'Scut' *treefile | xargs --null rm
+
 ###for each hypothesis you are going to test with codeml, make a directory###
+############################pristimantis###################################
 mkdir pristimantis
+cd pristimantis
 ln -s ../04-TREES_paml_pristi/*treefile .
 ln -s ../../PAL2NAL/05-NOSTOPS/*nostop.fa .
 
@@ -22,6 +30,34 @@ for file in *.fa.treefile; do f2=${file%%.fa.treefile}".nuc.nostop.fa.alt.ctl"; 
 ###lets also change the control files to put outfiles in the right directories, for ease of management###
 mkdir alt/
 mkdir null
+
+#################elevation#########################
+mkdir highelevation
+cd highelevation
+ln -s ../04-TREES_paml_elevation/*treefile .
+ln -s ../../PAL2NAL/05-NOSTOPS/*nostop.fa .
+grep -r -L -Z 'Nano' *nostop.fa | xargs --null rm
+grep -r -L -Z 'Scut' *nostop.fa | xargs --null rm
+###run this script to create control files for alt and null hypotheses for each alignment, give it a default tree for now, the species tree from Orthofinder###
+perl ../../perl_scripts/run_codeml.pl --tree=SpeciesTree_rooted_node_labels.txt --null --alt --aln_suf=nostop.fa
+for file in *.fa.treefile; do f2=${file%%.fa.treefile}".nuc.nostop.fa.alt.ctl"; f3=${file%%.fa.treefile}".nuc.nostop.fa.null.ctl"; sed -i "s/SpeciesTree_rooted_node_labels.txt/$file/g" $f2; sed -i "s/SpeciesTree_rooted_node_labels.txt/$file/g" $f3; done
+mkdir alt/
+mkdir null
+
+###if you want to run the codeml part on slurm this is how it would look
+#!/bin/bash
+#SBATCH --job-name=pamlelev1
+#SBATCH --nodes=1
+#SBATCH --time=500:00:00
+#SBATCH --error=job.%J.err
+#SBATCH --output=job.%J.out
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=250G
+
+ls *ctl | sed -n -e '1,300p' | while read -r file; do codeml $file > $file.out 2> $file.err ; mv *alt*codeml alt/; mv *alt*err alt/; mv *alt*out alt/; mv *null*codeml null/; mv *null*err null/;mv *null*out null/ ;done
+
+
+######################direct developers##################
 
 
 screen -S paml
