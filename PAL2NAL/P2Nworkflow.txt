@@ -2,8 +2,12 @@
 mkdir PAL2NAL
 cd PAL2NAL
 ###lets get our peptide alignments from Phylopypruner here###
+
+
 perl ../perl_scripts/remove_blank_seqs_and_fewer_than_n.pl --out_dir=01-SEQS --min_seq=7 --aln_dir=../Phylopypruner/phylopypruner_output/atleast_1_Pristi/
 ###now lets get our cds files from Transdecoder for our nucleotide-aware alignment###
+
+
 perl ../perl_scripts/get_corresponding_cds.pl ../Transdecoder/new_names/cdhit_cds/ 01-SEQS 02-CDS
 ###Adjust names of sequences to only include species names: Trimtopipe.pl###
 
@@ -13,5 +17,23 @@ perl -pi -e 's/^>([^|]+)\|.*/>$1/' 01-SEQS/* 02-CDS/*
 
 perl ../perl_scripts/run_pal2nal_on_cds_and_aa_dirs.pl --aa_dir=01-SEQS --cds_dir=02-CDS --outdir=03-P2N
 ####if this fails, try this command instead, running it without the helper perl script####
-cd 01-SEQS
-for file in *.fa; do f2=${file%%.fa}".cds.fa"; f3=${file%%.fa}".nuc.aln"; pal2nal.pl $file ../02-CDS/$f2 -output fasta > ../03-P2N/$f3; done
+#cd 01-SEQS
+#for file in *.fa; do f2=${file%%.fa}".cds.fa"; f3=${file%%.fa}".nuc.aln"; pal2nal.pl $file ../02-CDS/$f2 -output fasta > ../03-P2N/$f3; done
+
+
+###now lets remove stop codons for HYPHY####
+
+cd 03-P2N
+mkdir ../05-NOSTOPS
+for file in *aln; do f2=${file%%aln}"nostop.fa"; hyphy ~/miniconda3/pkgs/hyphy-2.5.39-h91ae1e9_0/share/hyphy/TemplateBatchFiles/CleanStopCodons.bf Universal $file No/Yes ../05-NOSTOPS/$f2; done
+
+###now we must trim our nostop files, makes the trees better and less weird values from PAML####
+
+
+mkdir ../06-TRIM-NOSTOPS
+cd ../05-NOSTOPS
+for file in *nostop.fa; do f2=${file%%nostop.fa}"nostop.trim.fa"; trimal -in $file -out ../06-TRIM-NOSTOPS/$f2 -fasta -gappyout; done
+
+####make the trees using iqtree from these trimmed nostop alignments####
+ls -1 *.fa | sed -n -e '27,250p'|  while read -r LINE; do iqtree -s $LINE -mset HKY,JC,GTR -lbp 1000 -nt 16; done
+###now you should be ready to go for labeling the trees and running HYPHY/PAML####
