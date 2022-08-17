@@ -1,1 +1,14 @@
 
+mkdir PAL2NAL
+cd PAL2NAL
+###lets get our peptide alignments from Phylopypruner here###
+perl ../perl_scripts/remove_blank_seqs_and_fewer_than_n.pl --out_dir=01-SEQS --min_seq=7 --aln_dir=../Phylopypruner/phylopypruner_output/atleast_1_Pristi/
+###now lets get our cds files from Transdecoder for our nucleotide-aware alignment###
+perl ../perl_scripts/get_corresponding_cds.pl ../Transdecoder/new_names/cdhit_cds/ 01-SEQS 02-CDS
+###Adjust names of sequences to only include species names: Trimtopipe.pl###
+
+perl -pi -e 's/^>([^|]+)\|.*/>$1/' 01-SEQS/* 02-CDS/*
+
+####Run pal2nal on the sequences in the cds and aa directories:###### 
+
+perl ../perl_scripts/run_pal2nal_on_cds_and_aa_dirs.pl --aa_dir=01-SEQS --cds_dir=02-CDS --outdir=03-P2N
