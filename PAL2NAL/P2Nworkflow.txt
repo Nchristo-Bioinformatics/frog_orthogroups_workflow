@@ -12,3 +12,6 @@ perl -pi -e 's/^>([^|]+)\|.*/>$1/' 01-SEQS/* 02-CDS/*
 ####Run pal2nal on the sequences in the cds and aa directories:###### 
 
 perl ../perl_scripts/run_pal2nal_on_cds_and_aa_dirs.pl --aa_dir=01-SEQS --cds_dir=02-CDS --outdir=03-P2N
+####if this fails, try this command instead, running it without the helper perl script####
+cd 01-SEQS
+for file in *.fa; do f2=${file%%.fa}".cds.fa"; f3=${file%%.fa}".nuc.aln"; pal2nal.pl $file ../02-CDS/$f2 -output fasta > ../03-P2N/$f3; done
