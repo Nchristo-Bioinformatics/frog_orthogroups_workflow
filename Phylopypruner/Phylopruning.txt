@@ -1,0 +1,16 @@
+#!/bin/bash
+#SBATCH --job-name=phyloprune
+#SBATCH --nodes=1
+#SBATCH --time=200:00:00
+#SBATCH --error=job.%J.err
+#SBATCH --output=job.%J.out
+#SBATCH --cpus-per-task=18
+#SBATCH --mem=250G
+
+
+mkdir Orthofinder/02-pristi_only_for_concat
+cd Orthofinder/02-pristi_only_for_concat
+cp ../01-AA_cdhit/OrthoFinder/Results_Jul29/Orthogroups/*.fa .
+cp ../01-AA_cdhit/OrthoFinder/Results_Jul29/Gene_Trees/*tree.txt .
+for file in *_tree.txt; do f2=${file%%_tree.txt}".tree"; mv $file $f2; done
+phylopypruner --dir ../Orthofinder/02-pristi_only_for_concat/ --overwrite --threads 18 --include Oreobates_cruralis Pristimantis_andinognomus Pristimantis_orestes Pristimantis_sp1 Pristimantis_sp2 Pristimantis_sp3 Pristimantis_sp4 Pristimantis_sp5 --mask longest --min-support 0.5 --min-taxa 20 --prune MI --output pruning_output_concat
