@@ -1,0 +1,42 @@
+grep -r -L -Z 'Time used' *codeml | xargs --null rm
+while read -r line;
+do
+export orthogroupNumber=`echo "$line" | awk -F'.' '{print ($1)}'`
+export treeFile=$orthogroupNumber".nuc.nostop.trim.fa.treefile"
+if [ -f "$treeFile" ]; then
+ echo "$treeFile exists."
+ FILE="$orthogroupNumber.nuc.nostop.trim.fa.alt.codeml"
+ if [ -f "$FILE" ]; then
+  echo "*************************************************************"
+  echo "altfile $FILE exists; codeml has already been run on this orthogroup."
+  echo "*************************************************************"
+ else
+        # Make sure vertical bars are replaced with underscores:
+  echo This file should be added to the file list
+  echo "$orthogroupNumber".nuc.nostop.trim.fa.alt.ctl >> to_do_list.txt
+ fi
+ FILE2="$orthogroupNumber.nuc.nostop.trim.fa.null.codeml"
+ if [ -f "$FILE2" ]; then
+  echo "*************************************************************"
+  echo "nullfile $FILE2 exists; codeml has already been run on this orthogroup."
+  echo "*************************************************************"
+ else
+        # Make sure vertical bars are replaced with underscores:
+  echo This file should be added to the file list
+  echo "$orthogroupNumber"nuc.nostop.trim.fa.null.ctl >> to_do_list.txt
+ fi
+else
+ echo "$treeFile does not exist because this orthogroup consists of three or fewer sequences."
+fi
+done < sequencefileList.txt
+
+while read -r line;
+    # line is       8_2_RemovedStops/cleaned_OG0000001_cds.fasta
+do
+ echo $line
+ codeml $line > $line.out 2> $line.err
+ echo "done with $line"
+ echo __________________________________________________
+done< to_do_list.txt | sed -n -e '1,100p'
+
+ls *ctl | sed -n -e '50,100p' | while read -r file; do codeml $file > $file.out 2> $file.err;done
