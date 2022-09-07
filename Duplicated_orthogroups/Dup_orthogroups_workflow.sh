@@ -30,7 +30,11 @@ cut -f1 ALL_dupgroups_nodes_support.txt | sort | uniq | while read -r LINE; do g
 
 
 ###PRUNING PARALOGUES TO MAKE ORTHOGROUPS SMALLER###
-
-mkdir OG_alignments
-cut -f1 dupgroup_kinfin_annotations.txt | cut -f2 -d: | sort | uniq| while read -r LINE; do cp ~/OrthoFinder/NO_CDHIT_NEW_TREE_CHECK/OrthoFinder/Results_Jun01/MultipleSequenceAlignments/$LINE* OG_alignments/; done
-cut -f1 dupgroup_kinfin_annotations.txt | cut -f2 -d: | sort | uniq| while read -r LINE; do cp ~/OrthoFinder/NO_CDHIT_NEW_TREE_CHECK/OrthoFinder/Results_Jun01/Resolved_Gene_Trees/$LINE* OG_alignments/; done
+mkdir DUPLICATED_PHYLOPYPRUNER
+cut -f1 ALL_dupgroups_nodes_support.txt | sort | uniq | while read -r LINE; do cp ../Orthofinder/01-AA_cdhit/OrthoFinder/Results_Jul29/MultipleSequenceAlignments/$LINE".fa" Duplicated_Phylotreepruner/; done
+cut -f1 ALL_dupgroups_nodes_support.txt | sort | uniq | while read -r LINE; do cp ../Orthofinder/01-AA_cdhit/OrthoFinder/Results_Jul29/Gene_Trees/$LINE* Duplicated_Phylotreepruner/; done
+cd DUPLICATED_PHYLOPYPRUNER
+for file in *_tree.txt; do f2=${file%%_tree.txt}".tree"; mv $file $f2; done
+cd ..
+###LETS SEE IF THIS WORKS##########
+phylopypruner --dir DUPLICATED_PHYLOPYPRUNER --overwrite --threads 8 --include Oreobates_cruralis Pristimantis_andinognomus Pristimantis_orestes Pristimantis_sp1 Pristimantis_sp2 Pristimantis_sp3 Pristimantis_sp4 Pristimantis_sp5 --mask longest --min-support 0.5 --min-taxa 20 --prune MI
