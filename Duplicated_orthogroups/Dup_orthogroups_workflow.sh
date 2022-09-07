@@ -31,10 +31,26 @@ cut -f1 ALL_dupgroups_nodes_support.txt | sort | uniq | while read -r LINE; do g
 
 ###PRUNING PARALOGUES TO MAKE ORTHOGROUPS SMALLER###
 mkdir DUPLICATED_PHYLOPYPRUNER
-cut -f1 ALL_dupgroups_nodes_support.txt | sort | uniq | while read -r LINE; do cp ../Orthofinder/01-AA_cdhit/OrthoFinder/Results_Jul29/MultipleSequenceAlignments/$LINE".fa" Duplicated_Phylotreepruner/; done
-cut -f1 ALL_dupgroups_nodes_support.txt | sort | uniq | while read -r LINE; do cp ../Orthofinder/01-AA_cdhit/OrthoFinder/Results_Jul29/Gene_Trees/$LINE* Duplicated_Phylotreepruner/; done
-cd DUPLICATED_PHYLOPYPRUNER
-for file in *_tree.txt; do f2=${file%%_tree.txt}".tree"; mv $file $f2; done
-cd ..
+##cut -f1 ALL_dupgroups_nodes_support.txt | sort | uniq | while read -r LINE; do cp ../Orthofinder/01-AA_cdhit/OrthoFinder/Results_Jul29/MultipleSequenceAlignments/$LINE".fa" Duplicated_Phylotreepruner/; done
+#cut -f1 ALL_dupgroups_nodes_support.txt | sort | uniq | while read -r LINE; do cp ../Orthofinder/01-AA_cdhit/OrthoFinder/Results_Jul29/Gene_Trees/$LINE* Duplicated_Phylotreepruner/; done
+#cd DUPLICATED_PHYLOPYPRUNER
+#for file in *_tree.txt; do f2=${file%%_tree.txt}".tree"; mv $file $f2; done
+#cd ..
 ###LETS SEE IF THIS WORKS##########
-phylopypruner --dir DUPLICATED_PHYLOPYPRUNER --overwrite --threads 8 --include Oreobates_cruralis Pristimantis_andinognomus Pristimantis_orestes Pristimantis_sp1 Pristimantis_sp2 Pristimantis_sp3 Pristimantis_sp4 Pristimantis_sp5 --mask longest --min-support 0.5 --min-taxa 20 --prune MI
+#phylopypruner --dir DUPLICATED_PHYLOPYPRUNER --overwrite --threads 8 --include Oreobates_cruralis Pristimantis_andinognomus Pristimantis_orestes Pristimantis_sp1 Pristimantis_sp2 Pristimantis_sp3 Pristimantis_sp4 Pristimantis_sp5 --mask longest --min-support 0.5 --min-taxa 20 --prune MI
+####OKAY IT DOESNT WORK, ONLY ONE ORTHOGROUP ALIGNMENT REMAINS########
+mkdir 02-INDEX_FASTAS
+cd 01-SEQS/
+###GET TOP 2 ISOFORMS AND MAKE CSV###
+for file in *fa; 
+do samtools faidx $file; done
+for file in *.fa.fai; do f2=${file%%.fa.fai}".csv"; cut -f1 -d"|" $file | sort -u |  parallel -k "grep {} -m 1 <(sort -k2,2 -r --sort g $file ) | cut -f1" > $f2; done
+cp *csv ../01-SEQS
+###SUBSET PROTEIN ORTHOFINDER FILES####
+cd ..
+mkdir 03-PRUNED_SEQS
+cd 01-SEQS
+for file in *.csv; do f1=${file%%.csv}".fa" ;f2=${file%%.csv}"_pruned.fa"; samtools faidx $f1 -r $file > ../03-PRUNED_SEQS/$f2; done
+####Now lets get the CDS NUCLEOTIDE SEQUENCES###
+cd ..
+perl ../perl_scripts/get_corresponding_cds.pl ../Transdecoder/new_names/cdhit_cds/ 03-PRUNED_SEQS/ 04-CDS
