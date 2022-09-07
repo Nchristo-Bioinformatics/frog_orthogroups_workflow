@@ -10,7 +10,7 @@
 
 mkdir Orthofinder/02-pristi_only_for_concat
 cd Orthofinder/02-pristi_only_for_concat
-cp ../01-AA_cdhit/OrthoFinder/Results_Jul29/Orthogroups/*.fa .
+cp ../01-AA_cdhit/OrthoFinder/Results_Jul29/MultipleSequenceAlignments/*.fa .
 cp ../01-AA_cdhit/OrthoFinder/Results_Jul29/Gene_Trees/*tree.txt .
 ###remove any alignments/trees without Pristimantis in them###
 grep -r -L -Z 'Pristi' * | xargs --null rm
