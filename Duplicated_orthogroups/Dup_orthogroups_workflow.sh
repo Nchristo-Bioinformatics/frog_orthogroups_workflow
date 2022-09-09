@@ -54,3 +54,23 @@ for file in *.csv; do f1=${file%%.csv}".fa" ;f2=${file%%.csv}"_pruned.fa"; samto
 ####Now lets get the CDS NUCLEOTIDE SEQUENCES###
 cd ..
 perl ../perl_scripts/get_corresponding_cds.pl ../Transdecoder/new_names/cdhit_cds/ 03-PRUNED_SEQS/ 04-CDS
+
+###shorten sequence names#####
+perl -pi -e 's/^>([^|]+)\|.*/>$1/' 03-PRUNED_SEQS/* 04-CDS/*
+
+##re-align your pruned peptides for pal2nal and treemaking###
+mkdir 05-ALNS
+cd 03-PRUNED_SEQS
+for file in *.fa; do mafft --anysymbol --auto --quiet --thread 4 $file > ../05-ALNS/$file; done
+
+###remake the trees from these pruned alignments###
+cd 05-ALNS
+ls -1 *_pruned_*.fa | while read -r file; do iqtree -s $file -st AA -fast -mset LG,WAG,JTT,DAYHOFF  -lbp 1000 -nt AUTO; done
+
+###run pal2nal on aligned prots and nucs###
+cd 05-ALNS
+for file in *.fa; do f2=${file%%.fa}".cds.fa"; f3=${file%%.fa}".nuc.aln"; pal2nal.pl $file ../04-CDS/$f2 -output fasta > ../06-P2N/$f3; done
+###remove stop codons####
+
+cd 06-P2N/
+for file in *aln; do f2=${file%%aln}"nostop.fa"; hyphy ~/miniconda3/pkgs/hyphy-2.5.39-h91ae1e9_0/share/hyphy/TemplateBatchFiles/CleanStopCodons.bf Universal $file No/Yes ../07-NOSTOPS/$f2; done
