@@ -7,7 +7,7 @@ tar -xzvf interproscan-5.52-86.0-64-bit.tar.gz
 cd ./interproscan-5.52-86.0
 mkdir ./out
 ####need peptide files for this####
-ln -s ../../Orthofinder/01-AA/*fasta .
+ cp ../../Orthofinder/01-AA_cdhit/*fasta .
 ####script for annotating all your protein fasta files####
 #!/bin/bash
 #SBATCH --job-name=interpro
