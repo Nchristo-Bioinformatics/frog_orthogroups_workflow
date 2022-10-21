@@ -11,3 +11,6 @@
 conda activate buscoing
 ln -s ~/polar_workflow/Transdecoder/new_names/cdhit_cds/*cds .
 for file in *.transdecoder.cds; do f2=${file%%.transdecoder.cds}"_busco"; busco -i $file -l metazoa_odb10 -o $f2 -m trans -c 8; done
+###make busco plot###
+mv *busco/short_summary*txt short_summaries
+generate_plot.py -wd short_summaries/
