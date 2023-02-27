@@ -57,7 +57,9 @@ perl ../perl_scripts/get_corresponding_cds.pl ../Transdecoder/new_names/cdhit_cd
 
 ###shorten sequence names#####
 perl -pi -e 's/^>([^|]+)\|.*/>$1/' 03-PRUNED_SEQS/* 04-CDS/*
+### In case of taking multiple transcripts per species, you will also need to rename the duplicate sequences for when we align and make the trees###
 
+for file in *pruned.fa; do perl -i.bak -pe 's/$/_$seen{$_}/ if ++$seen{$_}>1 and /^>/; ' $file; done
 ##re-align your pruned peptides for pal2nal and treemaking###
 mkdir 05-ALNS
 cd 03-PRUNED_SEQS
