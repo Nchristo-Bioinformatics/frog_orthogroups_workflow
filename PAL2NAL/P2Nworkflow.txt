@@ -27,13 +27,6 @@ cd 03-P2N
 mkdir ../05-NOSTOPS
 for file in *aln; do f2=${file%%aln}"nostop.fa"; hyphy ~/miniconda3/pkgs/hyphy-2.5.39-h91ae1e9_0/share/hyphy/TemplateBatchFiles/CleanStopCodons.bf Universal $file No/Yes ../05-NOSTOPS/$f2; done
 
-###now we must trim our nostop files, makes the trees better and less weird values from PAML####
 
-
-mkdir ../06-TRIM-NOSTOPS
-cd ../05-NOSTOPS
-for file in *nostop.fa; do f2=${file%%nostop.fa}"nostop.trim.fa"; trimal -in $file -out ../06-TRIM-NOSTOPS/$f2 -fasta -gappyout; done
-
-####make the trees using iqtree from these trimmed nostop alignments####
-ls -1 *.fa | sed -n -e '27,250p'|  while read -r LINE; do iqtree -s $LINE -mset HKY,JC,GTR -lbp 1000 -nt 16; done
-###now you should be ready to go for labeling the trees and running HYPHY/PAML####
+####make the trees using iqtree from these AA alignments from phylopypruner####
+ls -1 *_pruned_*.fa  | while read -r file; do iqtree -s $file -st AA -fast -mset LG,WAG,JTT,DAYHOFF  -lbp 1000 -nt AUTO; done
