@@ -17,3 +17,8 @@ conda activate /home/$$$$/orthofinder_workflow
 
 ###put the species name in front of the sequences, will help for later###
 perl -pi.orig -e 's/^>/>SPECIES_NAME|/' SPECIES.fasta
+for file in *.fasta; do
+  f1=${file%%.fasta}
+  echo "$f1"
+  perl -pi.orig -e "s/^>/>${f1}|/" "$file"
+done
